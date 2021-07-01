@@ -24,12 +24,9 @@ async function handleRequest(request) {
   <title>editor</title>
   </head>
   <body>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js" integrity="sha512-GZ1RIgZaSc8rnco/8CXfRdCpDxRCphenIiZ2ztLy3XQfCbQUSCuk8IudvNHxkRA3oUg6q0qejgN/qqyG1duv5Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  
-  <div id="editor">function foo(items) {
-    var x = "All this is syntax highlighted";
-    return x;
-}</div>
+  <script type="module" src="https://unpkg.com/ace-custom-element@latest/dist/index.min.js"></script>
+
+<ace-editor theme="ace/theme/monokai" value="console.log('hello world');"></ace-editor>
 
 <script>
     function copyToClipboard(message) {
@@ -52,9 +49,7 @@ async function handleRequest(request) {
         document.body.removeChild(textArea);
     }
     
-    var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/javascript");
+    var editor = document.querySelector('ace-editor').editor;
     fetch('https://raw.githubusercontent.com/ca-d/deploy-editor/main/editor.ts').then(res => res.text().then(text => editor.session.setValue(text)));
     document.addEventListener('keydown',
       e => {
@@ -68,7 +63,7 @@ async function handleRequest(request) {
 </script>
 
 <style>
-#editor {
+ace-editor {
     width: 100vw;
     height: 100vh;
     position: absolute;
