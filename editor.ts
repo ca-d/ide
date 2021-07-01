@@ -49,14 +49,14 @@ async function handleRequest(request) {
         document.body.removeChild(textArea);
     }
     
-    var editor = document.querySelector('ace-editor').editor;
-    fetch('https://raw.githubusercontent.com/ca-d/deploy-editor/main/editor.ts').then(res => res.text().then(text => editor.session.setValue(text)));
+    var editor = document.querySelector('ace-editor');
+    fetch('https://raw.githubusercontent.com/ca-d/deploy-editor/main/editor.ts').then(res => res.text().then(text => (editor.value = text)));
     document.addEventListener('keydown',
       e => {
         if (e.ctrlKey && e.key === 's') {
           e.stopPropagation();
           e.preventDefault();
-          const url = 'data:text/plain;base64,' + btoa(editor.getValue());
+          const url = 'data:text/plain;base64,' + btoa(editor.value);
           copyToClipboard(url);
         }
       }, true);
