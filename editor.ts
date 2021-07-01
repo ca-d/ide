@@ -55,6 +55,7 @@ async function handleRequest(request) {
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/monokai");
     editor.session.setMode("ace/mode/javascript");
+    fetch('https://raw.githubusercontent.com/ca-d/deploy-editor/main/editor.ts').then(res => res.text().then(text => editor.session.setContent(text)));
     document.addEventListener('keydown',
       e => {
         if (e.ctrlKey && e.key === 's') {
