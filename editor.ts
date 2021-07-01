@@ -63,12 +63,12 @@ async function handleRequest(request) {
 </script>
 
 <style>
+body {
+  margin: 0px;
+}
 ace-editor {
     width: 100vw;
     height: 100vh;
-    position: absolute;
-    top: 0;
-    left: 0;
 }
 </style>
   </body>
