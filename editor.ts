@@ -84,7 +84,7 @@ const html = `<html>
 	body {
 	  margin: 0px;
 	}
-	ace-editor.ace-editor {
+	ace-editor.ace_editor {
 	    width: 100vw;
 	    height: 100vh;
 	    font-size: 20px;
