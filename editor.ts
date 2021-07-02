@@ -1,4 +1,14 @@
 const handlers = { GET: handleGet };
+const routers = {
+	GET: [
+		['/store', handleStore],
+		['/', handleGet]
+	] };
+	
+async function handleStore(request) {
+	return new Response('<p>hai store</p>',
+		{ headers: { "content-type": "text/html; charset=UTF-8" } });
+}
 
 async function handleGet(request) {
 	return new Response(html, {
@@ -9,12 +19,14 @@ async function handleGet(request) {
 }
 
 async function handleRequest(request) {
-	const handler = handlers[request.method];
-	if (!handler)
+	const routes = routers[request.method];
+	if (!routes)
 	return new Response(null, {
 		status: 405,
 		statusText: "Method Not Allowed",
 	});
+	
+	const handler = routes.find(([prefix, _]) => new URL(request.url).pathname.startsWith(prefix))[1];
 	return handler(request);
 }
 
@@ -25,7 +37,7 @@ const html = `<html>
   <body>
   <script type="module" src="https://unpkg.com/ace-custom-element@latest/dist/index.min.js"></script>
 
-<ace-editor theme="ace/theme/monokai" value="console.log('hello world');"></ace-editor>
+<ace-editor theme="ace/theme/solarized_dark" mode="ace/mode/typescript" value="console.log('hello world');"></ace-editor>
 
 <script>
     function copyToClipboard(message) {
@@ -68,6 +80,7 @@ body {
 ace-editor {
     width: 100vw;
     height: 100vh;
+    font-size: 20px;
 }
 </style>
   </body>
