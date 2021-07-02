@@ -1,24 +1,4 @@
-import { escapeHtml } from "https://deno.land/x/escape/mod.ts";
-
 async function handleRequest(request) {
-  const { pathname } = new URL(request.url);
-  
-  let url = '';
-  let data = { value: 'console.info("Hello, Deno Deploy!")' };
-
-  if (pathname.startsWith("/store")) {
-    let path = pathname.substring(6);
-    const opts = { headers: { "content-type": "text/html; charset=UTF-8", }, };
-    
-    const formData = await request.formData();
-    for (const [key, value] of formData.entries()) {
-      data[key] = value;
-    }
-    url = `data:text/plain;base64,${btoa(data['value'])}`;
-    console.warn(data);
-    console.warn(url);
-  }
-
   const html = `<html>
   <head>
   <title>editor</title>
