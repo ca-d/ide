@@ -76,7 +76,18 @@ const html = `<html>
           e.stopPropagation();
           e.preventDefault();
           const url = 'data:text/plain;base64,' + btoa(editor.value);
-          copyToClipboard(url);
+          // copyToClipboard(url);
+          fetch('https://api-ssl.bitly.com/v4/shorten',
+          {
+            body: JSON.stringify({
+	            "domain": "bit.ly",  
+	            "long_url": url,
+            });
+          	headers: {
+				      'Content-Type': 'application/json',
+				      'Authorization': 'Bearer ${Deno.env.get('bitly')}'
+				    },
+          }).then(res => res.text().then(text => copyToClipboard(text)));
         }
       }, true);
   </script>
