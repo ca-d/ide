@@ -83,6 +83,7 @@ const html = `<html>
 	            "domain": "bit.ly",  
 	            "long_url": url,
             }),
+	    method: 'POST',
           	headers: {
 				      'Content-Type': 'application/json',
 				      'Authorization': 'Bearer ${Deno.env.get('bitly')}'
