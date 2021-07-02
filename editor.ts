@@ -1,4 +1,3 @@
-const handlers = { GET: handleGet };
 const routers = {
   GET: [
     ['/store', handleStore],
@@ -42,7 +41,8 @@ const html = `<html>
 
   <ace-editor theme="ace/theme/solarized_dark"
               mode="ace/mode/typescript"
-              value="console.log('hello world');">
+              value="console.log('hello world');"
+              softTabs wrap>
   </ace-editor>
   
   <script>
@@ -67,7 +67,9 @@ const html = `<html>
     }
     
     var editor = document.querySelector('ace-editor');
-    fetch('https://raw.githubusercontent.com/ca-d/deploy-editor/main/editor.ts').then(res => res.text().then(text => editor.setAttribute('value',text)));
+    fetch(
+      'https://raw.githubusercontent.com/ca-d/deploy-editor/main/editor.ts'
+    ).then(res => res.text().then(text => editor.setAttribute('value',text)));
     document.addEventListener('keydown',
       e => {
         if (e.ctrlKey && e.key === 's') {
