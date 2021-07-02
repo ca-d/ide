@@ -26,20 +26,26 @@ async function handleRequest(request) {
 		statusText: "Method Not Allowed",
 	});
 	
-	const handler = routes.find(([prefix, _]) => new URL(request.url).pathname.startsWith(prefix))[1];
+	const handler = routes.find(([prefix, _]) =>
+		new URL(request.url).pathname.startsWith(prefix))[1];
 	return handler(request);
 }
 
 const html = `<html>
-  <head>
+<head>
   <title>editor</title>
-  </head>
-  <body>
-  <script type="module" src="https://unpkg.com/ace-custom-element@latest/dist/index.min.js"></script>
+</head>
+<body>
+  <script type="module"
+  	src="https://unpkg.com/ace-custom-element@latest/dist/index.min.js">
+  </script>
 
-<ace-editor theme="ace/theme/solarized_dark" mode="ace/mode/typescript" value="console.log('hello world');"></ace-editor>
-
-<script>
+	<ace-editor theme="ace/theme/solarized_dark"
+							mode="ace/mode/typescript"
+							value="console.log('hello world');">
+	</ace-editor>
+	
+	<script>
     function copyToClipboard(message) {
         var textArea = document.createElement("textarea");
         textArea.value = message;
@@ -71,20 +77,22 @@ const html = `<html>
           copyToClipboard(url);
         }
       }, true);
-</script>
+	</script>
 
-<style>
-body {
-  margin: 0px;
-}
-ace-editor {
-    width: 100vw;
-    height: 100vh;
-    font-size: 20px;
-}
-</style>
-  </body>
-    </html>`;
+	<style>
+	@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&display=swap');
+	body {
+	  margin: 0px;
+	}
+	ace-editor {
+	    width: 100vw;
+	    height: 100vh;
+	    font-size: 20px;
+	    font-family: 'Fira Code';
+	}
+	</style>
+</body>
+</html>`;
 
 addEventListener("fetch", (event) => {
   event.respondWith(handleRequest(event.request));
