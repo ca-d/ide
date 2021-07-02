@@ -1,5 +1,24 @@
+const handlers = { GET: handleGet };
+
+async function handleGet(request) {
+	return new Response(html, {
+		headers: {
+			"content-type": "text/html; charset=UTF-8",
+		},
+	});
+}
+
 async function handleRequest(request) {
-  const html = `<html>
+	const handler = handlers[request.method];
+	if (!handler)
+	return new Response(null, {
+		status: 405,
+		statusText: "Method Not Allowed",
+	});
+	return handler(request);
+}
+
+const html = `<html>
   <head>
   <title>editor</title>
   </head>
@@ -53,18 +72,6 @@ ace-editor {
 </style>
   </body>
     </html>`;
-
-    return new Response(html, {
-      headers: {
-        // The interpretation of the body of the response by the client depends
-        // on the 'content-type' header.
-        // The "text/html" part implies to the client that the content is HTML
-        // and the "charset=UTF-8" part implies to the client that the content
-        // is encoded using UTF-8.
-        "content-type": "text/html; charset=UTF-8",
-      },
-    });
-}
 
 addEventListener("fetch", (event) => {
   event.respondWith(handleRequest(event.request));
