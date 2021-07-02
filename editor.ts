@@ -82,7 +82,7 @@ const html = `<html>
             body: JSON.stringify({
 	            "domain": "bit.ly",  
 	            "long_url": url,
-            });
+            }),
           	headers: {
 				      'Content-Type': 'application/json',
 				      'Authorization': 'Bearer ${Deno.env.get('bitly')}'
