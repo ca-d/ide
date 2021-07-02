@@ -50,7 +50,7 @@ async function handleRequest(request) {
     }
     
     var editor = document.querySelector('ace-editor');
-    fetch('https://raw.githubusercontent.com/ca-d/deploy-editor/main/editor.ts').then(res => res.text().then(text => (editor.value = text)));
+    fetch('https://raw.githubusercontent.com/ca-d/deploy-editor/main/editor.ts').then(res => res.text().then(text => editor.editor.session.setValue(text)));
     document.addEventListener('keydown',
       e => {
         if (e.ctrlKey && e.key === 's') {
