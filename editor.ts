@@ -12,8 +12,7 @@ async function handleStore(request) {
 async function handleGet(request) {
   return new Response(html, {
     headers: {
-      "Access-Control-Allow-Origin:": "*",
-      "content-type": "text/html; charset=UTF-8",
+      "Content-Type": "text/html; charset=UTF-8",
     },
   });
 }
@@ -88,9 +87,9 @@ const html = `<html>
 	    mode: 'no-cors',
 	    method: 'POST',
           	headers: {
-				      'Content-Type': 'application/json',
-				      'X-API-KEY': '${Deno.env.get('kuttit')}'
-				    },
+		      'Content-Type': 'application/json',
+		      'X-API-KEY': '${Deno.env.get('kuttit')}'
+		    },
           }).then(res => res.text().then(text => console.log(text)));
         }
       }, true);
