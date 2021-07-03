@@ -2,11 +2,19 @@ const routers = {
   GET: [
     ['/store', handleStore],
     ['/', handleGet]
-  ] };
+  ],
+  POST: [
+  	['/', handlePost]
+	],
+};
   
 async function handleStore(request) {
   return new Response('<p>hai store</p>',
     { headers: { "content-type": "text/html; charset=UTF-8" } });
+}
+
+async function handlePost(request) {
+	console.log(await request.text());
 }
 
 async function handleGet(request) {
@@ -76,7 +84,7 @@ const html = `<html>
           e.stopPropagation();
           e.preventDefault();
           const url = 'data:text/plain;base64,' + btoa(editor.value);
-          // copyToClipboard(url);
+          copyToClipboard(url);
           fetch('https://kutt.it/api/v2/links',
           {
             body: JSON.stringify({
