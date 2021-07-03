@@ -12,6 +12,7 @@ async function handleStore(request) {
 async function handleGet(request) {
   return new Response(html, {
     headers: {
+      "Access-Control-Allow-Origin:": "*",
       "content-type": "text/html; charset=UTF-8",
     },
   });
