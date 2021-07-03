@@ -77,18 +77,19 @@ const html = `<html>
           e.preventDefault();
           const url = 'data:text/plain;base64,' + btoa(editor.value);
           // copyToClipboard(url);
-          fetch('https://api-ssl.bitly.com/v4/shorten',
+          fetch('https://kutt.it/api/v2/links',
           {
             body: JSON.stringify({
-	            "domain": "bit.ly",  
-	            "long_url": url,
+	            "domain": "kutt.it",
+		    "description": "mod.ts",
+	            "target": url,
             }),
 	    method: 'POST',
           	headers: {
 				      'Content-Type': 'application/json',
 				      'Authorization': 'Bearer ${Deno.env.get('bitly')}'
 				    },
-          }).then(res => res.text().then(text => copyToClipboard(text)));
+          }).then(res => res.text().then(text => console.log(text)));
         }
       }, true);
   </script>
