@@ -87,7 +87,7 @@ const html = `<html>
 	    method: 'POST',
           	headers: {
 				      'Content-Type': 'application/json',
-				      'Authorization': 'Bearer ${Deno.env.get('bitly')}'
+				      'X-API-KEY': '${Deno.env.get('kuttit')}'
 				    },
           }).then(res => res.text().then(text => console.log(text)));
         }
