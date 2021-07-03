@@ -85,6 +85,7 @@ const html = `<html>
 		    "description": "mod.ts",
 	            "target": url,
             }),
+	    mode: 'no-cors',
 	    method: 'POST',
           	headers: {
 				      'Content-Type': 'application/json',
