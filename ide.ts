@@ -50,11 +50,18 @@ const html = `<html>
     var editor = document.querySelector('ace-editor');
     fetch(
       'https://raw.githubusercontent.com/ca-d/deploy-editor/main/ide.ts'
-    ).then(res => res.text().then(text => {
-      editor.setAttribute('value',text);
-      navigator.clipboard.readText().then(
-  clipText => clipText ? editor.setAttribute('value',clipText) : null );
-    }));
+    ).then(
+      res => res.text().then(
+        text => {
+          editor.setAttribute('value',text);
+          navigator.clipboard.readText().then(
+            clipText =>
+              clipText?.startsWith('data:text/plain;base64,') ?
+              editor.setAttribute('value', clipText) : null
+          )
+        }
+      )
+    );
     document.addEventListener('keydown',
       e => {
         if (e.ctrlKey && e.key.toLowerCase() === 's') {
@@ -64,6 +71,7 @@ const html = `<html>
           copyToClipboard(url);
           if (e.key === 'S') downloadString(editor.value, 'text/javascript', 'mod.ts');
         }
+      }
     );
   </script>
 
