@@ -57,7 +57,7 @@ const html = `<html>
           navigator.clipboard.readText().then(
             clipText =>
               clipText?.startsWith('data:text/plain;base64,') ?
-              editor.setAttribute('value', clipText) : null
+              editor.setAttribute('value', atob(clipText.substring('data:text/plain;base64,'.length))) : null
           )
         }
       )
