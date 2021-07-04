@@ -2,7 +2,7 @@ import { DeployClient } from "https://crux.land/5KVm9w";
 
 /** # Welcome to the Deno Deploy IDE
  *
- * By default, you may press ctrl+s to copy the contents of this editor
+ * By default, you may press `ctrl+s` to copy the contents of this editor
  * to the clipboard in the form of a link you can post to your own Deno Deploy
  * project to run your very own custom version of this IDE.
  *
@@ -10,17 +10,17 @@ import { DeployClient } from "https://crux.land/5KVm9w";
  * by deno deploy from a commit to
  * https://github.com/ca-d/deploy-editor/edit/main/ide.ts .
  * If you feel adventurous, try deploying your own instance to Deno Deploy,
- * generate a deploy token, then try hitting ctrl+d on the running website and
+ * generate a deploy token, then try hitting `ctrl+d` on the running website and
  * entering your deploy name and deploy token.
  *
- * For example, https://deploy-editor.deno.dev was deployed by hitting ctrl+d on
- * the website itself and entering `deploy-editor` under "Deploy name" and my
- * secret deploy token under "Deploy token", which I'm not going to tell you ;-P .
+ * For example, https://deploy-editor.deno.dev was deployed by hitting `ctrl+d`
+ * on that very website and entering `deploy-editor` under "Deploy name" and my
+ * secret deploy token under "Deploy token", which I'm not going to tell you ;-P
  *
  * If you want a boring old file version of the typescript source code from this
  * editor in order to upload it to github and deploy from there because you're
  * feeling reactionary or can't figure out how to get your own Deno Deploy token
- * (hint: https://dash.deno.com/account), go ahead and press ctrl+shift+s .
+ * (hint: https://dash.deno.com/account), go ahead and press `ctrl+shift+s` .
  * I dare you.
  */
 
@@ -77,6 +77,8 @@ async function handlePost(request) {
       (p) => p.name === request.headers.get("X-Deploy-Name")
     );
     console.log(project);
+    
+    await deploy.deploy(project.id, url, true);
     return new Response(text, responseInit);
   }
 }
@@ -117,11 +119,15 @@ const html = `<html>
     async function initEditor() {
       const gitRes = await fetch('${env("url")}')
       const gitText = await gitRes.text();
-      if (gitText)
+      if (gitText) {
+      	console.log('git', gitText);
         editor.setAttribute('value', gitText);
+      }
       const clipURL = await navigator.clipboard.readText();
-      if (clipURL?.startsWith('${env("format")}'))
+      if (clipURL?.startsWith('${env("format")}')) {
+      	console.log('clip', clipURL);
         editor.setAttribute('value', atob(clipURL.substring(${env("format").length})));
+      }
       const deployURLRes = await fetch('/src', {
               method: 'GET',
               headers: {
@@ -133,8 +139,10 @@ const html = `<html>
       const deployURL = await deployURLRes.text();
       const deployRes = await fetch(deployURL);
       const deployText = await deployRes.text();
-      if (deployText)
+      if (deployText) {
+      	console.log('deploy', deployText);
         editor.setAttribute('value', deployText);
+      }
     }
 
     initEditor();
