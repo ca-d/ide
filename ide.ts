@@ -123,8 +123,8 @@ const html = `<html>
 </body>
 </html>`;
 
-addEventListener("fetch", ({request}) => {
-  event.respondWith(request.method === 'POST' ? handlePost(request) : new Response(html, {
+addEventListener("fetch", (event) => {
+  event.respondWith(event.request.method === 'POST' ? handlePost(event.request) : new Response(html, {
     headers: {
     	"Access-Control-Allow-Origin": "*",
       "Content-Type": "text/html; charset=UTF-8",
