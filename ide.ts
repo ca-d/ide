@@ -99,19 +99,22 @@ const html = `<html>
           const format = '${env('format')}';
           const text = editor.value;
           const url = format + btoa(text);
-          if (e.key === 'd')
-          fetch('/',
-          {
-          	method: 'POST',
-          	body: editor.value,
-          	headers: {
-          		'Content-Type': 'text/javascript',
-          		'X-Deploy-Token': window.prompt('Deploy token')
-          	}
-          }).then(res => res.text().then(console.log));
-          else if (e.key === 'S') downloadString(text, 'text/javascript', title);
+          if (e.key === 'd') {
+            const token = localStorage.getItem('deploy-token') ||
+              window.prompt('Deploy token');
+            localStorage.setItem('deploy-token', token);
+	          fetch('/',
+	          {
+	          	method: 'POST',
+	          	body: editor.value,
+	          	headers: {
+	          		'Content-Type': 'text/javascript',
+	          		'X-Deploy-Token': token,
+	          	}
+	          }).then(res => res.text().then(console.log));
+          } else if (e.key === 'S') downloadString(text, 'text/javascript', title);
           else if (navigator.canShare({url, text, title})) navigator.share({url, text, title});
-          else navigator.clipboard.writeText(url);
+          navigator.clipboard.writeText(url);
         }
       },
       true
