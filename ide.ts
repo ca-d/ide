@@ -2,10 +2,10 @@ const defaults = {
 	theme: 'solarized_dark',
 	mode: 'typescript',
 	url: 'https://raw.githubusercontent.com/ca-d/deploy-editor/main/ide.ts',
-	format: 'data:text/plain;base64,',
+	format: 'data:text/javascript;base64,',
 };
 
-function env(key: string, def?: string): string {
+function env(key, def) {
 	return Deno.env.get(key) ?? def ?? defaults[key] ?? '';
 }
 
@@ -25,25 +25,6 @@ const html = `<html>
   </ace-editor>
   
   <script>
-    function copyToClipboard(message) {
-        var textArea = document.createElement("textarea");
-        textArea.value = message;
-        textArea.style.opacity = "0"; 
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-
-        try {
-            var successful = document.execCommand('copy');
-            var msg = successful ? 'successful' : 'unsuccessful';
-            alert('Copying text command was ' + msg);
-        } catch (err) {
-            alert('Unable to copy value , error : ' + err.message);
-        }
-
-        document.body.removeChild(textArea);
-    }
-    
     function downloadString(text, fileType, fileName) {
       var blob = new Blob([text], { type: fileType });
 
@@ -76,9 +57,13 @@ const html = `<html>
         if (e.ctrlKey && e.key.toLowerCase() === 's') {
           e.stopPropagation();
           e.preventDefault();
-          const url = '${env('format')}' + btoa(editor.value);
-          copyToClipboard(url);
-          if (e.key === 'S') downloadString(editor.value, 'text/javascript', 'mod.ts');
+          const title = 'mod.ts';
+          const format = '${env('format')}';
+          const text = editor.value;
+          const url = format + btoa(text);
+          navigator.clipboard.writeText(url);
+          console.log(url);
+          if (e.key === 'S') downloadString(text, 'text/javascript', title);
         }
       }
     );
