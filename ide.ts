@@ -59,8 +59,7 @@ const html = `<html>
     }
     
     var editor = document.querySelector('ace-editor');
-    fetch(
-    ).then(
+    fetch('${env('url')}').then(
       res => res.text().then(
         text => {
           editor.setAttribute('value',text);
