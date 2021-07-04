@@ -62,7 +62,11 @@ const html = `<html>
           const text = editor.value;
           const url = format + btoa(text);
           navigator.clipboard.writeText(url);
-          console.log(url);
+          Notification.requestPermission().then(result =>
+					  result === 'granted' ?
+					  	new Notification('copied', {body: url}) :
+					    console.log('copied', url)
+					);
           if (e.key === 'S') downloadString(text, 'text/javascript', title);
         }
       }
