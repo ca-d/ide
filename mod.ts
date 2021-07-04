@@ -8,7 +8,7 @@ import { DeployClient } from "https://crux.land/5KVm9w";
  *
  * This version of the source code was pushed to https://ide.deno.dev magically
  * by deno deploy from a commit to
- * https://github.com/ca-d/deploy-editor/edit/main/ide.ts .
+ * https://github.com/ca-d/ide/edit/main/mod.ts .
  * If you feel adventurous, try deploying your own instance to Deno Deploy,
  * generate a deploy token, then try hitting `ctrl+d` on the running website and
  * entering your deploy name and deploy token.
