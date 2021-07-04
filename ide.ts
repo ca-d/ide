@@ -1,8 +1,11 @@
+import { DeployClient } from 'https://crux.land/5KVm9w';
+
 const defaults = {
 	theme: 'solarized_dark',
 	mode: 'typescript',
 	url: 'https://raw.githubusercontent.com/ca-d/deploy-editor/main/ide.ts',
 	format: 'data:text/javascript;base64,',
+	'deploy-name': 'deploy-editor',
 };
 
 function env(key, def) {
@@ -31,11 +34,11 @@ async function handlePost(request) {
 
   if (contentType.includes("text/javascript")) {
     const text = await request.text();
-    const deploy = new DeployClient('DEPLOYTOKEN');
+    const deploy = new DeployClient(request.headers.get('X-Deploy-Token'));
     const url = env('format') + btoa(text);
           
 		const projects = await deploy.fetchProjects();
-		project = projects.find(p => p.name === 'deploy-editor');
+		const project = projects.find(p => p.name === env('deploy-name'));
 		console.log(await deploy.deploy(project.id, url));
     return new Response(text, responseInit);
   }
@@ -89,22 +92,29 @@ const html = `<html>
     
     document.addEventListener('keydown',
       async e => {
-        if (e.ctrlKey && e.key.toLowerCase() === 's') {
+        if (e.ctrlKey && (e.key.toLowerCase() === 's' || e.key === 'd')) {
           e.stopPropagation();
           e.preventDefault();
           const title = 'mod.ts';
           const format = '${env('format')}';
           const text = editor.value;
           const url = format + btoa(text);
-          navigator.clipboard.writeText(url);
-          Notification.requestPermission().then(result => {
-					  result === 'granted' ?
-					  	new Notification('copied', {body: url}) :
-					    console.log('copied', url)
-					});
-          if (e.key === 'S') downloadString(text, 'text/javascript', title);
+          if (e.key === 'd')
+          fetch('/',
+          {
+          	method: 'POST',
+          	body: editor.value,
+          	headers: {
+          		'Content-Type': 'text/javascript',
+          		'X-Deploy-Token': window.prompt('Deploy token')
+          	}
+          }).then(res => res.text().then(console.log));
+          else if (e.key === 'S') downloadString(text, 'text/javascript', title);
+          else if (navigator.canShare({url, text, title})) navigator.share({url, text, title});
+          else navigator.clipboard.writeText(url);
         }
-      }
+      },
+      true
     );
   </script>
 
