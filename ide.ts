@@ -1,3 +1,14 @@
+const defaults = {
+	theme: 'solarized_dark',
+	mode: 'typescript',
+	url: 'https://raw.githubusercontent.com/ca-d/deploy-editor/main/ide.ts',
+	format: 'data:text/plain;base64,',
+};
+
+function env(key: string, def?: string): string {
+	return Deno.env.get(key) ?? def ?? defaults[key] ?? '';
+}
+
 const html = `<html>
 <head>
   <title>editor</title>
@@ -7,9 +18,9 @@ const html = `<html>
     src="https://unpkg.com/ace-custom-element@latest/dist/index.min.js">
   </script>
 
-  <ace-editor theme="ace/theme/solarized_dark"
-              mode="ace/mode/typescript"
-              value="console.log('hello world');"
+  <ace-editor theme="ace/theme/${env('theme')}"
+              mode="ace/mode/${env('mode')}"
+              value="/* ${env('url')} */"
               softTabs wrap>
   </ace-editor>
   
@@ -49,15 +60,14 @@ const html = `<html>
     
     var editor = document.querySelector('ace-editor');
     fetch(
-      'https://raw.githubusercontent.com/ca-d/deploy-editor/main/ide.ts'
     ).then(
       res => res.text().then(
         text => {
           editor.setAttribute('value',text);
           navigator.clipboard.readText().then(
             clipText =>
-              clipText?.startsWith('data:text/plain;base64,') ?
-              editor.setAttribute('value', atob(clipText.substring('data:text/plain;base64,'.length))) : null
+              clipText?.startsWith('${env('format')}') ?
+              editor.setAttribute('value', atob(clipText.substring(${env('format').length}))) : null
           )
         }
       )
@@ -67,7 +77,7 @@ const html = `<html>
         if (e.ctrlKey && e.key.toLowerCase() === 's') {
           e.stopPropagation();
           e.preventDefault();
-          const url = 'data:text/plain;base64,' + btoa(editor.value);
+          const url = ${env('format')} + btoa(editor.value);
           copyToClipboard(url);
           if (e.key === 'S') downloadString(editor.value, 'text/javascript', 'mod.ts');
         }
