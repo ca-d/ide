@@ -1,11 +1,11 @@
-import { DeployClient } from 'https://crux.land/5KVm9w';
+import { DeployClient } from "https://crux.land/5KVm9w";
 
 /** # Welcome to the Deno Deploy IDE
- * 
+ *
  * By default, you may press ctrl+s to copy the contents of this editor
  * to the clipboard in the form of a link you can post to your own Deno Deploy
  * project to run your very own custom version of this IDE.
- * 
+ *
  * This version of the source code was pushed to https://ide.deno.dev magically
  * by deno deploy from a commit to
  * https://github.com/ca-d/deploy-editor/edit/main/ide.ts .
@@ -16,7 +16,7 @@ import { DeployClient } from 'https://crux.land/5KVm9w';
  * For example, https://deploy-editor.deno.dev was deployed by hitting ctrl+d on
  * the website itself and entering `deploy-editor` under "Deploy name" and my
  * secret deploy token under "Deploy token", which I'm not going to tell you ;-P .
- * 
+ *
  * If you want a boring old file version of the typescript source code from this
  * editor in order to upload it to github and deploy from there because you're
  * feeling reactionary or can't figure out how to get your own Deno Deploy token
@@ -25,14 +25,26 @@ import { DeployClient } from 'https://crux.land/5KVm9w';
  */
 
 const defaults = {
-  theme: 'solarized_dark',
-  mode: 'typescript',
-  url: 'https://raw.githubusercontent.com/ca-d/deploy-editor/main/ide.ts',
-  format: 'data:text/javascript;base64,',
+  theme: "solarized_dark",
+  mode: "typescript",
+  url: "https://raw.githubusercontent.com/ca-d/deploy-editor/main/ide.ts",
+  format: "data:text/javascript;base64,",
 };
 
-function env(key, def) {
-  return Deno.env.get(key) ?? def ?? defaults[key] ?? '';
+function env(key) {
+  return Deno.env.get(key) ?? defaults[key] ?? "";
+}
+
+async function handleSrc(request) {
+  const deploy = new DeployClient(request.headers.get("X-Deploy-Token"));
+
+  const projects = await deploy.fetchProjects();
+  const project = await deploy.fetchProject(
+    projects.find((p) => p.name === request.headers.get("X-Deploy-Name")).id
+  );
+  return new Response(project.productionDeployment.url, {
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  });
 }
 
 async function handlePost(request) {
@@ -45,7 +57,7 @@ async function handlePost(request) {
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },
-      },
+      }
     );
   }
   const contentType = request.headers.get("content-type");
@@ -57,12 +69,14 @@ async function handlePost(request) {
 
   if (contentType.includes("text/javascript")) {
     const text = await request.text();
-    const deploy = new DeployClient(request.headers.get('X-Deploy-Token'));
-    const url = env('format') + btoa(text);
-          
+    const url = env("format") + btoa(text);
+    const deploy = new DeployClient(request.headers.get("X-Deploy-Token"));
+
     const projects = await deploy.fetchProjects();
-    const project = projects.find(p => p.name === request.headers.get('X-Deploy-Name'));
-    console.log(await deploy.deploy(project.id, url));
+    const project = projects.find(
+      (p) => p.name === request.headers.get("X-Deploy-Name")
+    );
+    console.log(project);
     return new Response(text, responseInit);
   }
 }
@@ -76,9 +90,9 @@ const html = `<html>
     src="https://unpkg.com/ace-custom-element@latest/dist/index.min.js">
   </script>
 
-  <ace-editor theme="ace/theme/${env('theme')}"
-              mode="ace/mode/${env('mode')}"
-              value="/* ${env('url')} */"
+  <ace-editor theme="ace/theme/${env("theme")}"
+              mode="ace/mode/${env("mode")}"
+              value="/* ${env("url")} */"
               softTabs wrap>
   </ace-editor>
   
@@ -100,18 +114,30 @@ const html = `<html>
     
     var editor = document.querySelector('ace-editor');
     
-    fetch('${env('url')}').then(
-      res => res.text().then(
-        text => {
-          editor.setAttribute('value',text);
-          navigator.clipboard.readText().then(
-            clipText =>
-              clipText?.startsWith('${env('format')}') ?
-              editor.setAttribute('value', atob(clipText.substring(${env('format').length}))) : null
-          )
-        }
-      )
-    );
+    async function initEditor() {
+      const gitRes = await fetch('${env("url")}')
+      const gitText = await gitRes.text();
+      if (gitText)
+        editor.setAttribute('value', gitText);
+      const clipURL = await navigator.clipboard.readText();
+      if (clipURL?.startsWith('${env("format")}'))
+        editor.setAttribute('value', atob(clipURL.substring(${env("format").length})));
+      const deployURLRes = await fetch('/src', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'text/plain',
+                'X-Deploy-Token': localStorage.getItem('deploy-token') || 'INVALID-TOKEN',
+                'X-Deploy-Name': localStorage.getItem('deploy-name') || 'INVALID-NAME'
+              }
+            });
+      const deployURL = await deployURLRes.text();
+      const deployRes = await fetch(deployURL);
+      const deployText = await deployRes.text();
+      if (deployText)
+        editor.setAttribute('value', deployText);
+    }
+
+    initEditor();
     
     document.addEventListener('keydown',
       async e => {
@@ -119,7 +145,7 @@ const html = `<html>
           e.stopPropagation();
           e.preventDefault();
           const title = 'mod.ts';
-          const format = '${env('format')}';
+          const format = '${env("format")}';
           const text = editor.value;
           const url = format + btoa(text);
           if (e.key === 'd') {
@@ -164,13 +190,16 @@ const html = `<html>
 </html>`;
 
 addEventListener("fetch", (event) => {
-  event.respondWith(event.request.method === 'POST' ?
-    handlePost(event.request) :
-    new Response(html, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "text/html; charset=UTF-8",
-      },
-    })
+  event.respondWith(
+    event.request.method === "POST"
+      ? handlePost(event.request)
+      : new URL(event.request.url).pathname.startsWith("/src")
+      ? handleSrc(event.request)
+      : new Response(html, {
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "text/html; charset=UTF-8",
+          },
+        })
   );
 });
