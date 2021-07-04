@@ -9,7 +9,7 @@ function env(key, def) {
 	return Deno.env.get(key) ?? def ?? defaults[key] ?? '';
 }
 
-function handlePost(request) {
+async function handlePost(request) {
 	if (!request.headers.has("content-type")) {
     return new Response(
       JSON.stringify({ error: "please set 'content-type: text/javascript'" }),
@@ -29,7 +29,6 @@ function handlePost(request) {
     },
   };
 
-	// Handle JS data.
   if (contentType.includes("text/javascript")) {
     const text = await request.text();
     const deploy = new DeployClient('DEPLOYTOKEN');
