@@ -77,7 +77,7 @@ const html = `<html>
         if (e.ctrlKey && e.key.toLowerCase() === 's') {
           e.stopPropagation();
           e.preventDefault();
-          const url = ${env('format')} + btoa(editor.value);
+          const url = '${env('format')}' + btoa(editor.value);
           copyToClipboard(url);
           if (e.key === 'S') downloadString(editor.value, 'text/javascript', 'mod.ts');
         }
