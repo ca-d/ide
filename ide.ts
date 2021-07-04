@@ -25,18 +25,18 @@ import { DeployClient } from 'https://crux.land/5KVm9w';
  */
 
 const defaults = {
-	theme: 'solarized_dark',
-	mode: 'typescript',
-	url: 'https://raw.githubusercontent.com/ca-d/deploy-editor/main/ide.ts',
-	format: 'data:text/javascript;base64,',
+  theme: 'solarized_dark',
+  mode: 'typescript',
+  url: 'https://raw.githubusercontent.com/ca-d/deploy-editor/main/ide.ts',
+  format: 'data:text/javascript;base64,',
 };
 
 function env(key, def) {
-	return Deno.env.get(key) ?? def ?? defaults[key] ?? '';
+  return Deno.env.get(key) ?? def ?? defaults[key] ?? '';
 }
 
 async function handlePost(request) {
-	if (!request.headers.has("content-type")) {
+  if (!request.headers.has("content-type")) {
     return new Response(
       JSON.stringify({ error: "please set 'content-type: text/javascript'" }),
       {
@@ -60,9 +60,9 @@ async function handlePost(request) {
     const deploy = new DeployClient(request.headers.get('X-Deploy-Token'));
     const url = env('format') + btoa(text);
           
-		const projects = await deploy.fetchProjects();
-		const project = projects.find(p => p.name === request.headers.get('X-Deploy-Name'));
-		console.log(await deploy.deploy(project.id, url));
+    const projects = await deploy.fetchProjects();
+    const project = projects.find(p => p.name === request.headers.get('X-Deploy-Name'));
+    console.log(await deploy.deploy(project.id, url));
     return new Response(text, responseInit);
   }
 }
@@ -129,16 +129,16 @@ const html = `<html>
               window.prompt('Deploy name');
             localStorage.setItem('deploy-token', token);
             localStorage.setItem('deploy-name', name);
-	          fetch('/',
-	          {
-	          	method: 'POST',
-	          	body: editor.value,
-	          	headers: {
-	          		'Content-Type': 'text/javascript',
-	          		'X-Deploy-Token': token,
-	          		'X-Deploy-Name': name,
-	          	}
-	          }).then(res => res.text().then(alert));
+            fetch('/',
+            {
+              method: 'POST',
+              body: editor.value,
+              headers: {
+                'Content-Type': 'text/javascript',
+                'X-Deploy-Token': token,
+                'X-Deploy-Name': name,
+              }
+            }).then(res => res.text().then(alert));
           } else if (e.key === 'S') downloadString(text, 'text/javascript', title);
           else if (navigator.canShare?.()) navigator.share({url, text, title});
           navigator.clipboard.writeText(url);
@@ -164,10 +164,13 @@ const html = `<html>
 </html>`;
 
 addEventListener("fetch", (event) => {
-  event.respondWith(event.request.method === 'POST' ? handlePost(event.request) : new Response(html, {
-    headers: {
-    	"Access-Control-Allow-Origin": "*",
-      "Content-Type": "text/html; charset=UTF-8",
-    },
-  }));
+  event.respondWith(event.request.method === 'POST' ?
+    handlePost(event.request) :
+    new Response(html, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "text/html; charset=UTF-8",
+      },
+    })
+  );
 });
