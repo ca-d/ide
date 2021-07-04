@@ -9,6 +9,39 @@ function env(key, def) {
 	return Deno.env.get(key) ?? def ?? defaults[key] ?? '';
 }
 
+function handlePost(request) {
+	if (!request.headers.has("content-type")) {
+    return new Response(
+      JSON.stringify({ error: "please set 'content-type: text/javascript'" }),
+      {
+        status: 400,
+        statusText: "Bad Request",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+      },
+    );
+  }
+  const contentType = request.headers.get("content-type");
+  const responseInit = {
+    headers: {
+      "Content-Type": "text/javascript; charset=utf-8",
+    },
+  };
+
+	// Handle JS data.
+  if (contentType.includes("text/javascript")) {
+    const text = await request.text();
+    const deploy = new DeployClient('DEPLOYTOKEN');
+    const url = env('format') + btoa(text);
+          
+		const projects = await deploy.fetchProjects();
+		project = projects.find(p => p.name === 'deploy-editor');
+		console.log(await deploy.deploy(project.id, url));
+    return new Response(text, responseInit);
+  }
+}
+
 const html = `<html>
 <head>
   <title>editor</title>
@@ -24,7 +57,8 @@ const html = `<html>
               softTabs wrap>
   </ace-editor>
   
-  <script>
+  <script type="module">
+  
     function downloadString(text, fileType, fileName) {
       var blob = new Blob([text], { type: fileType });
 
@@ -55,7 +89,7 @@ const html = `<html>
     );
     
     document.addEventListener('keydown',
-      e => {
+      async e => {
         if (e.ctrlKey && e.key.toLowerCase() === 's') {
           e.stopPropagation();
           e.preventDefault();
@@ -64,7 +98,11 @@ const html = `<html>
           const text = editor.value;
           const url = format + btoa(text);
           navigator.clipboard.writeText(url);
-          alert('Copied deployable URL ' + url.substring(0,20) + '...')
+          Notification.requestPermission().then(result => {
+					  result === 'granted' ?
+					  	new Notification('copied', {body: url}) :
+					    console.log('copied', url)
+					});
           if (e.key === 'S') downloadString(text, 'text/javascript', title);
         }
       }
@@ -86,9 +124,10 @@ const html = `<html>
 </body>
 </html>`;
 
-addEventListener("fetch", (event) => {
-  event.respondWith(new Response(html, {
+addEventListener("fetch", ({request}) => {
+  event.respondWith(request.method === 'POST' ? handlePost(request) : new Response(html, {
     headers: {
+    	"Access-Control-Allow-Origin": "*",
       "Content-Type": "text/html; charset=UTF-8",
     },
   }));
