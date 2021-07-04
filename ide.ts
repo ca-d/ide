@@ -64,11 +64,7 @@ const html = `<html>
           const text = editor.value;
           const url = format + btoa(text);
           navigator.clipboard.writeText(url);
-          Notification.requestPermission().then(result => {
-					  result === 'granted' ?
-					  	new Notification('copied', {body: url}) :
-					    console.log('copied', url)
-					});
+          alert('Copied deployable URL ' + url.substring(0,20) + '...')
           if (e.key === 'S') downloadString(text, 'text/javascript', title);
         }
       }
