@@ -1,11 +1,34 @@
 import { DeployClient } from 'https://crux.land/5KVm9w';
 
+/** # Welcome to the Deno Deploy IDE
+ * 
+ * By default, you may press ctrl+s to copy the contents of this editor
+ * to the clipboard in the form of a link you can post to your own Deno Deploy
+ * project to run your very own custom version of this IDE.
+ * 
+ * This version of the source code was pushed to https://ide.deno.dev magically
+ * by deno deploy from a commit to
+ * https://github.com/ca-d/deploy-editor/edit/main/ide.ts .
+ * If you feel adventurous, try deploying your own instance to Deno Deploy,
+ * generate a deploy token, then try hitting ctrl+d on the running website and
+ * entering your deploy name and deploy token.
+ *
+ * For example, https://deploy-editor.deno.dev was deployed by hitting ctrl+d on
+ * the website itself and entering `deploy-editor` under "Deploy name" and my
+ * secret deploy token under "Deploy token", which I'm not going to tell you ;-P .
+ * 
+ * If you want a boring old file version of the typescript source code from this
+ * editor in order to upload it to github and deploy from there because you're
+ * feeling reactionary or can't figure out how to get your own Deno Deploy token
+ * (hint: https://dash.deno.com/account), go ahead and press ctrl+shift+s .
+ * I dare you.
+ */
+
 const defaults = {
 	theme: 'solarized_dark',
 	mode: 'typescript',
 	url: 'https://raw.githubusercontent.com/ca-d/deploy-editor/main/ide.ts',
 	format: 'data:text/javascript;base64,',
-	'deploy-name': 'deploy-editor',
 };
 
 function env(key, def) {
@@ -38,7 +61,7 @@ async function handlePost(request) {
     const url = env('format') + btoa(text);
           
 		const projects = await deploy.fetchProjects();
-		const project = projects.find(p => p.name === env('deploy-name'));
+		const project = projects.find(p => p.name === request.headers.get('X-Deploy-Name'));
 		console.log(await deploy.deploy(project.id, url));
     return new Response(text, responseInit);
   }
@@ -102,7 +125,10 @@ const html = `<html>
           if (e.key === 'd') {
             const token = localStorage.getItem('deploy-token') ||
               window.prompt('Deploy token');
+            const name = localStorage.getItem('deploy-name') ||
+              window.prompt('Deploy name');
             localStorage.setItem('deploy-token', token);
+            localStorage.setItem('deploy-name', name);
 	          fetch('/',
 	          {
 	          	method: 'POST',
@@ -110,10 +136,11 @@ const html = `<html>
 	          	headers: {
 	          		'Content-Type': 'text/javascript',
 	          		'X-Deploy-Token': token,
+	          		'X-Deploy-Name': name,
 	          	}
-	          }).then(res => res.text().then(console.log));
+	          }).then(res => res.text().then(alert));
           } else if (e.key === 'S') downloadString(text, 'text/javascript', title);
-          else if (navigator.canShare({url, text, title})) navigator.share({url, text, title});
+          else if (navigator.canShare?.()) navigator.share({url, text, title});
           navigator.clipboard.writeText(url);
         }
       },
