@@ -40,6 +40,7 @@ const html = `<html>
     }
     
     var editor = document.querySelector('ace-editor');
+    
     fetch('${env('url')}').then(
       res => res.text().then(
         text => {
@@ -52,6 +53,7 @@ const html = `<html>
         }
       )
     );
+    
     document.addEventListener('keydown',
       e => {
         if (e.ctrlKey && e.key.toLowerCase() === 's') {
@@ -62,11 +64,11 @@ const html = `<html>
           const text = editor.value;
           const url = format + btoa(text);
           navigator.clipboard.writeText(url);
-          Notification.requestPermission().then(result =>
+          Notification.requestPermission().then(result => {
 					  result === 'granted' ?
 					  	new Notification('copied', {body: url}) :
 					    console.log('copied', url)
-					);
+					});
           if (e.key === 'S') downloadString(text, 'text/javascript', title);
         }
       }
