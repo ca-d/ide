@@ -1,3 +1,5 @@
+import { S3Bucket } from "https://deno.land/x/s3@0.4.1/mod.ts";
+
 const routers = {
   GET: [
     ['/store', handleStore],
@@ -9,12 +11,55 @@ const routers = {
 };
   
 async function handleStore(request) {
-  return new Response('<p>hai store</p>',
+  return new Response(`<p>hai store ${request.url}</p>`,
     { headers: { "content-type": "text/html; charset=UTF-8" } });
 }
 
 async function handlePost(request) {
-	console.log(await request.text());
+	const bucket = new S3Bucket({
+	  accessKeyID: Deno.env.get("amazon-id")!,
+	  secretKey: Deno.env.get("amazon-key")!,
+	  bucket: Deno.env.get("amazon-bucket")!,
+	  region: Deno.env.get("amazon-region")!,
+	  endpointURL: Deno.env.get("amazon-url")!,
+	});
+	
+	const jsonData = await request.json();
+	console.log(jsonData);
+	
+	const [e, a, v, assert] = jsonData;
+	
+	const t = new Date().getTime().toString(36) + '-' +
+		Math.random().toString(36).substring(2, 15);
+	
+	const keys = [
+	`eavt/${e}/${a}/${v}/${t}`,
+	`aevt/${a}/${e}/${v}/${t}`,
+	`avet/${a}/${v}/${e}/${t}`,
+	`vaet/${v}/${a}/${e}/${t}`,
+		];
+	
+	const encoder = new TextEncoder();
+	
+	await Promise.allSettled(keys.map(async key => {
+		await bucket.putObject(key, encoder.encode(JSON.stringify(assert)), {
+		  contentType: "text/plain",
+		});
+	}))
+	
+	// Retrieve an object form a bucket.
+	const { body } = await bucket.getObject(keys[0]);
+	const data = await new Response(body).text();
+	console.log(keys[0] + " contains:", data);
+	
+	// List objects in the bucket.
+	const list = bucket.listAllObjects({});
+	for await (const obj of list) {
+	  console.log("Item in bucket:", obj.key);
+	}
+
+	return new Response(data,
+    { headers: { "content-type": "text/plain; charset=UTF-8" } });
 }
 
 async function handleGet(request) {
