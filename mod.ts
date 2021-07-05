@@ -6,6 +6,8 @@ import { DeployClient } from "https://crux.land/5KVm9w";
  * By default, you may press `ctrl+s` to copy the contents of this editor
  * to the clipboard in the form of a link you can post to your own Deno Deploy
  * project to run your very own custom version of this IDE.
+ * 
+ * Please find all shortcuts under `defaults.shortcuts` below.
  *
  * This version of the source code was pushed to https://ide.deno.dev magically
  * by deno deploy from a commit to
