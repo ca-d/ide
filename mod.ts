@@ -30,6 +30,13 @@ const defaults = {
   mode: "typescript",
   url: "https://raw.githubusercontent.com/ca-d/ide/main/mod.ts",
   format: "data:text/javascript;base64,",
+  shortcuts: `{
+    	r: reload,
+    	s: copy,
+    	S: download,
+    	o: open,
+    	d: deploy,
+    }`,
 };
 
 function env(key) {
@@ -129,19 +136,17 @@ const html = `<html>
     
     var editor = document.querySelector('ace-editor');
     
-    async function initEditor() {
-      const gitRes = await fetch('${env("url")}')
-      const gitText = await gitRes.text();
-      if (gitText) {
-      	console.log('git', gitText);
-        editor.setAttribute('value', gitText);
-      }
-      const clipURL = await navigator.clipboard.readText();
-      if (clipURL?.startsWith('${env("format")}')) {
-      	console.log('clip', clipURL);
-        editor.setAttribute('value', atob(clipURL.substring(${env("format").length})));
-      }
-      const deployURLRes = await fetch('/src', {
+    async function loadURL(url) {
+    	const res = await fetch(url);
+    	const text = await res.text();
+    	if (text) {
+    		console.log('loading', url);
+    		editor.setAttribute('valu', text);
+    	}
+    }
+    
+    async function reload() {
+    	const deployURLRes = await fetch('/src', {
               method: 'GET',
               headers: {
                 'Content-Type': 'text/plain',
@@ -153,9 +158,16 @@ const html = `<html>
       const deployRes = await fetch(deployURL);
       const deployText = await deployRes.text();
       if (deployText) {
-      	console.log('deploy', deployText);
+      	console.log('deploy', deployURL);
         editor.setAttribute('value', deployText);
       }
+    }
+    
+    async function initEditor() {
+      await loadURL('${env("url")}');
+      const clipURL = await navigator.clipboard.readText();
+      await loadURL(clipURL);
+      await reload();
     }
 
     initEditor();
@@ -213,14 +225,10 @@ const html = `<html>
 	  saveUI.addEventListener('click', download);
 	  shareUI.addEventListener('click', copy);
 	  uploadUI.addEventListener('click', deploy);
+	  downloadUI.addEventListener('click', reload);
 	  openUI.addEventListener('click', open);
     
-    const shortcuts = {
-    	s: copy,
-    	d: deploy,
-    	S: download,
-    	o: open,
-    };
+    const shortcuts = ${env('shortcuts')};
     
     document.addEventListener('keydown',
       async e => {
@@ -243,7 +251,7 @@ const html = `<html>
   ace-editor.ace_editor {
       width: 100vw;
       height: 100vh;
-      font-size: 20px;
+  		font-size: 1.7vmin;
       font-family: 'Fira Code';
   }
   
@@ -253,6 +261,13 @@ const html = `<html>
     position: fixed;
     bottom: 16px;
     right: 16px;
+  }
+  
+  div.fabs > * > div {
+  	width: 64px;
+  	height: 64px;
+  	font-size: 48px;
+  	padding: 8px;
   }
   </style>
 </body>
