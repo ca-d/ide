@@ -6,7 +6,7 @@ import { DeployClient } from "https://crux.land/5KVm9w";
  * By default, you may press `ctrl+s` to copy the contents of this editor
  * to the clipboard in the form of a link you can post to your own Deno Deploy
  * project to run your very own custom version of this IDE.
- * 
+ *
  * Please find all shortcuts under `defaults.shortcuts` below.
  *
  * This version of the source code was pushed to https://ide.deno.dev magically
@@ -87,7 +87,7 @@ async function handlePost(request) {
       (p) => p.name === request.headers.get("X-Deploy-Name")
     );
     console.log(project);
-    
+
     await deploy.deploy(project.id, url, true);
     return new Response(text, responseInit);
   }
@@ -97,8 +97,6 @@ const html = `<html>
 <head>
   <title>ide.deno.dev</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block">
-  <link rel="stylesheet" type="text/css" href="https://deno.land/x/ide@0.0.6/om-color.css"></link>
-  <link rel="stylesheet" type="text/css" href="https://deno.land/x/ide@0.0.6/om-black.css"></link>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
@@ -234,7 +232,7 @@ const html = `<html>
     downloadUI.addEventListener('click', reload);
     openUI.addEventListener('click', open);
     
-    const shortcuts = ${env('shortcuts')};
+    const shortcuts = ${env("shortcuts")};
     
     document.addEventListener('keydown',
       async e => {
