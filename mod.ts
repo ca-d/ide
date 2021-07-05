@@ -27,7 +27,7 @@ import { DeployClient } from "https://crux.land/5KVm9w";
  * I dare you.
  ******************************************************************************/
 
-const defaults = {
+const defaults = <Record<string, string>> {
   theme: "solarized_dark",
   mode: "typescript",
   url: "https://raw.githubusercontent.com/ca-d/ide/main/mod.ts",
@@ -41,23 +41,35 @@ const defaults = {
     }`,
 };
 
-function env(key) {
+function env(key: string): string {
   return Deno.env.get(key) ?? defaults[key] ?? "";
 }
 
-async function handleSrc(request) {
-  const deploy = new DeployClient(request.headers.get("X-Deploy-Token"));
+async function handleSrc(request: Request) {
+  if (!request.headers.has("X-Deploy-Token")) {
+    return new Response(
+      JSON.stringify({ error: "please set 'X-Deploy-Token' header" }),
+      {
+        status: 400,
+        statusText: "Bad Request",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+      },
+    );
+  }
+  const deploy = new DeployClient(request.headers.get("X-Deploy-Token")!);
 
   const projects = await deploy.fetchProjects();
   const project = await deploy.fetchProject(
-    projects.find((p) => p.name === request.headers.get("X-Deploy-Name")).id
+    projects.find((p) => p.name === request.headers.get("X-Deploy-Name"))!.id,
   );
   return new Response(project.productionDeployment.url, {
     headers: { "Content-Type": "text/plain; charset=utf-8" },
   });
 }
 
-async function handlePost(request) {
+async function handlePost(request: Request) {
   if (!request.headers.has("content-type")) {
     return new Response(
       JSON.stringify({ error: "please set 'content-type: text/javascript'" }),
@@ -67,10 +79,10 @@ async function handlePost(request) {
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },
-      }
+      },
     );
   }
-  const contentType = request.headers.get("content-type");
+  const contentType = request.headers.get("content-type")!;
   const responseInit = {
     headers: {
       "Content-Type": "text/javascript; charset=utf-8",
@@ -80,17 +92,30 @@ async function handlePost(request) {
   if (contentType.includes("text/javascript")) {
     const text = await request.text();
     const url = env("format") + btoa(text);
-    const deploy = new DeployClient(request.headers.get("X-Deploy-Token"));
+    const deploy = new DeployClient(
+      request.headers.get("X-Deploy-Token") ?? "INVALID-TOKEN",
+    );
 
     const projects = await deploy.fetchProjects();
     const project = projects.find(
-      (p) => p.name === request.headers.get("X-Deploy-Name")
-    );
+      (p) => p.name === request.headers.get("X-Deploy-Name"),
+    )!;
     console.log(project);
 
     await deploy.deploy(project.id, url, true);
     return new Response(text, responseInit);
   }
+
+  return new Response(
+    JSON.stringify({ error: "please set 'content-type: text/javascript'" }),
+    {
+      status: 400,
+      statusText: "Bad Request",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+    },
+  );
 }
 
 const html = `<html>
@@ -304,17 +329,17 @@ const html = `<html>
 </body>
 </html>`;
 
-addEventListener("fetch", (event) => {
+addEventListener("fetch", (event: FetchEvent) => {
   event.respondWith(
     event.request.method === "POST"
       ? handlePost(event.request)
       : new URL(event.request.url).pathname.startsWith("/src")
       ? handleSrc(event.request)
       : new Response(html, {
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "text/html; charset=UTF-8",
-          },
-        })
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "text/html; charset=UTF-8",
+        },
+      }),
   );
 });
