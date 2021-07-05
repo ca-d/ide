@@ -113,11 +113,11 @@ const html = `<html>
   </ace-editor>
   
   <div class="fabs">
-    <wired-icon-button class="down"><div><i class="oma oma-face-with-monocle"></i></div></wired-icon-button>
-    <wired-icon-button class="copy"><div>&#x1f4cb;</div></wired-icon-button>
-    <wired-icon-button class="save"><div>&#x1f4be;</div></wired-icon-button>
-    <wired-icon-button class="open"><div>&#x1F517;</div></wired-icon-button>
-    <wired-fab class="up"><div>&#x1f199;</div></wired-fab>
+    <wired-icon-button class="down"><i class="oma oma-2x oma-repeat-button"></i></wired-icon-button>
+    <wired-icon-button class="copy"><i class="oma oma-2x oma-downwards-button"></i></wired-icon-button>
+    <wired-icon-button class="save"><i class="oma oma-2x oma-fast-down-button"></i></wired-icon-button>
+    <wired-icon-button class="open"><i class="oma oma-2x oma-stop-button"></i></wired-icon-button>
+    <wired-fab class="up"><i class="oma oma-2x oma-play-button"></i></wired-fab>
   </div>
   
   <script type="module">
@@ -267,15 +267,16 @@ const html = `<html>
     right: 16px;
   }
   
-  div.fabs > * > div {
-    height: 48px;
-    width: 48px;
-    font-size: 36px;
-  }
-  
   div.fabs > * {
+    margin: auto;
     padding: 8px;
   }
+  
+  wired-icon-button > i {
+  	position: relative;
+    left: -4px;
+  }
+  
   </style>
 </body>
 </html>`;
