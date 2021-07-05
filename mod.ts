@@ -86,9 +86,11 @@ async function handlePost(request) {
 
 const html = `<html>
 <head>
-  <title>editor</title>
+  <title>ide.deno.dev</title>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block">
 </head>
 <body>
+
   <script type="module"
     src="https://unpkg.com/ace-custom-element@latest/dist/index.min.js">
   </script>
@@ -99,7 +101,17 @@ const html = `<html>
               softTabs wrap>
   </ace-editor>
   
+  <div class="fabs">
+		<wired-icon-button class="down"><div>&#x21BA;</div></wired-icon-button>
+		<wired-icon-button class="copy"><div>&#x1f4cb;</div></wired-icon-button>
+		<wired-icon-button class="save"><div>&#x1f4be;</div></wired-icon-button>
+		<wired-icon-button class="open"><div>&#x1F517;</div></wired-icon-button>
+		<wired-fab class="up"><div>&#x1f199;</div></wired-fab>
+	</div>
+  
   <script type="module">
+	  import 'https://unpkg.com/wired-elements@3.0.0-rc.6/lib/wired-fab.js?module';
+	  import 'https://unpkg.com/wired-elements@3.0.0-rc.6/lib/wired-icon-button.js?module';
   
     function downloadString(text, fileType, fileName) {
       var blob = new Blob([text], { type: fileType });
@@ -192,6 +204,17 @@ const html = `<html>
     	editor.setAttribute('value', text)
     }
     
+	  const saveUI = document.querySelector('.save');
+	  const shareUI = document.querySelector('.copy');
+	  const uploadUI = document.querySelector('.up');
+	  const downloadUI = document.querySelector('.down');
+	  const openUI = document.querySelector('.open');
+	  
+	  saveUI.addEventListener('click', download);
+	  shareUI.addEventListener('click', copy);
+	  uploadUI.addEventListener('click', deploy);
+	  openUI.addEventListener('click', open);
+    
     const shortcuts = {
     	s: copy,
     	d: deploy,
@@ -216,11 +239,20 @@ const html = `<html>
   body {
     margin: 0px;
   }
+  
   ace-editor.ace_editor {
       width: 100vw;
       height: 100vh;
       font-size: 20px;
       font-family: 'Fira Code';
+  }
+  
+  div.fabs {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
   }
   </style>
 </body>
