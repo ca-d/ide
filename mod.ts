@@ -97,6 +97,8 @@ const html = `<html>
 <head>
   <title>ide.deno.dev</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block">
+  <link rel="stylesheet" type="text/css" href="https://deno.land/x/ide@0.0.6/om-color.css"></link>
+  <link rel="stylesheet" type="text/css" href="https://deno.land/x/ide@0.0.6/om-black.css"></link>
 </head>
 <body>
 
@@ -111,7 +113,7 @@ const html = `<html>
   </ace-editor>
   
   <div class="fabs">
-    <wired-icon-button class="down"><div>&#x1f504;</div></wired-icon-button>
+    <wired-icon-button class="down"><div><i class="oma oma-face-with-monocle"></i></div></wired-icon-button>
     <wired-icon-button class="copy"><div>&#x1f4cb;</div></wired-icon-button>
     <wired-icon-button class="save"><div>&#x1f4be;</div></wired-icon-button>
     <wired-icon-button class="open"><div>&#x1F517;</div></wired-icon-button>
