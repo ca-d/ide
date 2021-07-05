@@ -31,7 +31,7 @@ const defaults = {
   url: "https://raw.githubusercontent.com/ca-d/ide/main/mod.ts",
   format: "data:text/javascript;base64,",
   shortcuts: `{
-    	r: reload
+    	r: reload,
     	s: copy,
     	S: download,
     	o: open,
