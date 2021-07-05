@@ -33,11 +33,11 @@ const defaults = {
   url: "https://raw.githubusercontent.com/ca-d/ide/main/mod.ts",
   format: "data:text/javascript;base64,",
   shortcuts: `{
-    	r: reload,
-    	s: copy,
-    	S: download,
-    	o: open,
-    	d: deploy,
+      r: reload,
+      s: copy,
+      S: download,
+      o: open,
+      d: deploy,
     }`,
 };
 
@@ -96,7 +96,7 @@ async function handlePost(request) {
 const html = `<html>
 <head>
   <title>ide.deno.dev</title>
-	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block">
 </head>
 <body>
 
@@ -111,16 +111,16 @@ const html = `<html>
   </ace-editor>
   
   <div class="fabs">
-		<wired-icon-button class="down"><div>&#x21BA;</div></wired-icon-button>
-		<wired-icon-button class="copy"><div>&#x1f4cb;</div></wired-icon-button>
-		<wired-icon-button class="save"><div>&#x1f4be;</div></wired-icon-button>
-		<wired-icon-button class="open"><div>&#x1F517;</div></wired-icon-button>
-		<wired-fab class="up"><div>&#x1f199;</div></wired-fab>
-	</div>
+    <wired-icon-button class="down"><div>&#x21BA;</div></wired-icon-button>
+    <wired-icon-button class="copy"><div>&#x1f4cb;</div></wired-icon-button>
+    <wired-icon-button class="save"><div>&#x1f4be;</div></wired-icon-button>
+    <wired-icon-button class="open"><div>&#x1F517;</div></wired-icon-button>
+    <wired-fab class="up"><div>&#x1f199;</div></wired-fab>
+  </div>
   
   <script type="module">
-	  import 'https://unpkg.com/wired-elements@3.0.0-rc.6/lib/wired-fab.js?module';
-	  import 'https://unpkg.com/wired-elements@3.0.0-rc.6/lib/wired-icon-button.js?module';
+    import 'https://unpkg.com/wired-elements@3.0.0-rc.6/lib/wired-fab.js?module';
+    import 'https://unpkg.com/wired-elements@3.0.0-rc.6/lib/wired-icon-button.js?module';
   
     function downloadString(text, fileType, fileName) {
       var blob = new Blob([text], { type: fileType });
@@ -139,16 +139,16 @@ const html = `<html>
     var editor = document.querySelector('ace-editor');
     
     async function loadURL(url) {
-    	const res = await fetch(url);
-    	const text = await res.text();
-    	if (text) {
-    		console.log('loading', url);
-    		editor.setAttribute('valu', text);
-    	}
+      const res = await fetch(url);
+      const text = await res.text();
+      if (text) {
+        console.log('loading', url);
+        editor.setAttribute('valu', text);
+      }
     }
     
     async function reload() {
-    	const deployURLRes = await fetch('/src', {
+      const deployURLRes = await fetch('/src', {
               method: 'GET',
               headers: {
                 'Content-Type': 'text/plain',
@@ -160,7 +160,7 @@ const html = `<html>
       const deployRes = await fetch(deployURL);
       const deployText = await deployRes.text();
       if (deployText) {
-      	console.log('deploy', deployURL);
+        console.log('deploy', deployURL);
         editor.setAttribute('value', deployText);
       }
     }
@@ -175,35 +175,35 @@ const html = `<html>
     initEditor();
     
     function deploy() {
-    	const token = localStorage.getItem('deploy-token') ||
-	    	window.prompt('Deploy token');
-    	const name = localStorage.getItem('deploy-name') ||
-	    	window.prompt('Deploy name');
-    	localStorage.setItem('deploy-token', token);
-    	localStorage.setItem('deploy-name', name);
-    	fetch('/',
-	    	{
-		    	method: 'POST',
-		    	body: editor.value,
-		    	headers: {
-			    	'Content-Type': 'text/javascript',
-			    	'X-Deploy-Token': token,
-			    	'X-Deploy-Name': name,
-		    	}
-	    	}).then(res => res.text().then(alert));
+      const token = localStorage.getItem('deploy-token') ||
+        window.prompt('Deploy token');
+      const name = localStorage.getItem('deploy-name') ||
+        window.prompt('Deploy name');
+      localStorage.setItem('deploy-token', token);
+      localStorage.setItem('deploy-name', name);
+      fetch('/',
+        {
+          method: 'POST',
+          body: editor.value,
+          headers: {
+            'Content-Type': 'text/javascript',
+            'X-Deploy-Token': token,
+            'X-Deploy-Name': name,
+          }
+        }).then(res => res.text().then(alert));
     }
     
     function download() {
-    	downloadString(editor.value, 'text/javascript', window.location.hostname +
-    	 '.ts');
+      downloadString(editor.value, 'text/javascript', window.location.hostname +
+       '.ts');
     }
     
     function copy() {
       const title = window.location.hostname + '.ts';
       const text = editor.value;
       const url = '${env("format")}' + btoa(text);
-    	if (navigator.canShare?.()) {
-    		navigator.share({url, text, title});
+      if (navigator.canShare?.()) {
+        navigator.share({url, text, title});
       } else {
         navigator.clipboard.writeText(url);
         alert('Copied ' + url.substring(0,30) + '...');
@@ -211,24 +211,24 @@ const html = `<html>
     }
     
     async function open() {
-    	const url = prompt('Load URL');
-    	if (!url) return;
-    	const res = await fetch(url);
-    	const text = await res.text();
-    	editor.setAttribute('value', text)
+      const url = prompt('Load URL');
+      if (!url) return;
+      const res = await fetch(url);
+      const text = await res.text();
+      editor.setAttribute('value', text)
     }
     
-	  const saveUI = document.querySelector('.save');
-	  const shareUI = document.querySelector('.copy');
-	  const uploadUI = document.querySelector('.up');
-	  const downloadUI = document.querySelector('.down');
-	  const openUI = document.querySelector('.open');
-	  
-	  saveUI.addEventListener('click', download);
-	  shareUI.addEventListener('click', copy);
-	  uploadUI.addEventListener('click', deploy);
-	  downloadUI.addEventListener('click', reload);
-	  openUI.addEventListener('click', open);
+    const saveUI = document.querySelector('.save');
+    const shareUI = document.querySelector('.copy');
+    const uploadUI = document.querySelector('.up');
+    const downloadUI = document.querySelector('.down');
+    const openUI = document.querySelector('.open');
+    
+    saveUI.addEventListener('click', download);
+    shareUI.addEventListener('click', copy);
+    uploadUI.addEventListener('click', deploy);
+    downloadUI.addEventListener('click', reload);
+    openUI.addEventListener('click', open);
     
     const shortcuts = ${env('shortcuts')};
     
@@ -253,7 +253,7 @@ const html = `<html>
   ace-editor.ace_editor {
       width: 100vw;
       height: 100vh;
-  		font-size: 1.7vmin;
+      font-size: 1.7vmin;
       font-family: 'Fira Code';
   }
   
@@ -266,10 +266,13 @@ const html = `<html>
   }
   
   div.fabs > * > div {
-  	width: 64px;
-  	height: 64px;
-  	font-size: 48px;
-  	padding: 8px;
+    height: 48px;
+    width: 48px;
+    font-size: 36px;
+  }
+  
+  div.fabs > * {
+    padding: 8px;
   }
   </style>
 </body>
