@@ -111,7 +111,7 @@ const html = `<html>
   </ace-editor>
   
   <div class="fabs">
-    <wired-icon-button class="down"><div>&#x21BA;</div></wired-icon-button>
+    <wired-icon-button class="down"><div>&#x1f504;</div></wired-icon-button>
     <wired-icon-button class="copy"><div>&#x1f4cb;</div></wired-icon-button>
     <wired-icon-button class="save"><div>&#x1f4be;</div></wired-icon-button>
     <wired-icon-button class="open"><div>&#x1F517;</div></wired-icon-button>
