@@ -1,6 +1,7 @@
 import { DeployClient } from "https://crux.land/5KVm9w";
 
-/** # Welcome to the Deno Deploy IDE
+/*******************************************************************************
+ * # Welcome to the Deno Deploy IDE
  *
  * By default, you may press `ctrl+s` to copy the contents of this editor
  * to the clipboard in the form of a link you can post to your own Deno Deploy
@@ -22,12 +23,12 @@ import { DeployClient } from "https://crux.land/5KVm9w";
  * feeling reactionary or can't figure out how to get your own Deno Deploy token
  * (hint: https://dash.deno.com/account), go ahead and press `ctrl+shift+s` .
  * I dare you.
- */
+ ******************************************************************************/
 
 const defaults = {
   theme: "solarized_dark",
   mode: "typescript",
-  url: "https://raw.githubusercontent.com/ca-d/deploy-editor/main/ide.ts",
+  url: "https://raw.githubusercontent.com/ca-d/ide/main/mod.ts",
   format: "data:text/javascript;base64,",
 };
 
@@ -147,35 +148,63 @@ const html = `<html>
 
     initEditor();
     
+    function deploy() {
+    	const token = localStorage.getItem('deploy-token') ||
+	    	window.prompt('Deploy token');
+    	const name = localStorage.getItem('deploy-name') ||
+	    	window.prompt('Deploy name');
+    	localStorage.setItem('deploy-token', token);
+    	localStorage.setItem('deploy-name', name);
+    	fetch('/',
+	    	{
+		    	method: 'POST',
+		    	body: editor.value,
+		    	headers: {
+			    	'Content-Type': 'text/javascript',
+			    	'X-Deploy-Token': token,
+			    	'X-Deploy-Name': name,
+		    	}
+	    	}).then(res => res.text().then(alert));
+    }
+    
+    function download() {
+    	downloadString(editor.value, 'text/javascript', window.location.hostname +
+    	 '.ts');
+    }
+    
+    function copy() {
+      const title = window.location.hostname + '.ts';
+      const text = editor.value;
+      const url = '${env("format")}' + btoa(text);
+    	if (navigator.canShare?.()) {
+    		navigator.share({url, text, title});
+      } else {
+        navigator.clipboard.writeText(url);
+        alert('Copied ' + url.substring(0,30) + '...');
+      }
+    }
+    
+    async function open() {
+    	const url = prompt('Load URL');
+    	if (!url) return;
+    	const res = await fetch(url);
+    	const text = await res.text();
+    	editor.setAttribute('value', text)
+    }
+    
+    const shortcuts = {
+    	s: copy,
+    	d: deploy,
+    	S: download,
+    	o: open,
+    };
+    
     document.addEventListener('keydown',
       async e => {
-        if (e.ctrlKey && (e.key.toLowerCase() === 's' || e.key === 'd')) {
+        if (e.ctrlKey && shortcuts.hasOwnProperty(e.key)) {
           e.stopPropagation();
           e.preventDefault();
-          const title = 'mod.ts';
-          const format = '${env("format")}';
-          const text = editor.value;
-          const url = format + btoa(text);
-          if (e.key === 'd') {
-            const token = localStorage.getItem('deploy-token') ||
-              window.prompt('Deploy token');
-            const name = localStorage.getItem('deploy-name') ||
-              window.prompt('Deploy name');
-            localStorage.setItem('deploy-token', token);
-            localStorage.setItem('deploy-name', name);
-            fetch('/',
-            {
-              method: 'POST',
-              body: editor.value,
-              headers: {
-                'Content-Type': 'text/javascript',
-                'X-Deploy-Token': token,
-                'X-Deploy-Name': name,
-              }
-            }).then(res => res.text().then(alert));
-          } else if (e.key === 'S') downloadString(text, 'text/javascript', title);
-          else if (navigator.canShare?.()) navigator.share({url, text, title});
-          navigator.clipboard.writeText(url);
+          shortcuts[e.key]();
         }
       },
       true
