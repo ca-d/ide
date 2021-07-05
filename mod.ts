@@ -99,6 +99,7 @@ const html = `<html>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block">
   <link rel="stylesheet" type="text/css" href="https://deno.land/x/ide@0.0.6/om-color.css"></link>
   <link rel="stylesheet" type="text/css" href="https://deno.land/x/ide@0.0.6/om-black.css"></link>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
 
@@ -113,17 +114,18 @@ const html = `<html>
   </ace-editor>
   
   <div class="fabs">
-    <wired-icon-button class="down"><i class="oma oma-2x oma-repeat-button"></i></wired-icon-button>
-    <wired-icon-button class="copy"><i class="oma oma-2x oma-downwards-button"></i></wired-icon-button>
-    <wired-icon-button class="save"><i class="oma oma-2x oma-fast-down-button"></i></wired-icon-button>
-    <wired-icon-button class="open"><i class="oma oma-2x oma-stop-button"></i></wired-icon-button>
-    <wired-fab class="up"><i class="oma oma-2x oma-play-button"></i></wired-fab>
+    <i class="fa down fa-cloud-download-alt"></i>
+    <i class="fa copy fa-copy"></i>
+    <i class="fa save fa-file-download"></i>
+    <i class="fa open fa-external-link-alt"></i>
+    <i class="fa up fa-cloud-upload-alt"></i>
   </div>
   
-  <script type="module">
-    import 'https://unpkg.com/wired-elements@3.0.0-rc.6/lib/wired-fab.js?module';
-    import 'https://unpkg.com/wired-elements@3.0.0-rc.6/lib/wired-icon-button.js?module';
+  <!--
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" integrity="sha512-RXf+QSDCUQs5uwRKaDoXt55jygZZm2V++WUZduaU/Ui/9EGp3f/2KZVahFZBKGH0s774sd3HmrhUy+SgOFQLVQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  -->
   
+  <script type="module">
     function downloadString(text, fileType, fileName) {
       var blob = new Blob([text], { type: fileType });
 
@@ -250,12 +252,13 @@ const html = `<html>
   @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&display=swap');
   body {
     margin: 0px;
+    scrollbar-width: thin;
   }
   
   ace-editor.ace_editor {
       width: 100vw;
       height: 100vh;
-      font-size: 1.7vmin;
+      font-size: 1.7vw;
       font-family: 'Fira Code';
   }
   
@@ -270,12 +273,14 @@ const html = `<html>
   div.fabs > * {
     margin: auto;
     padding: 8px;
+    font-size: 64px;
+    animation: color_change 10s infinite alternate;
   }
   
-  wired-icon-button > i {
-  	position: relative;
-    left: -4px;
-  }
+  @keyframes color_change {
+		from { color: #cba; }
+		to { color: #abc; }
+	}
   
   </style>
 </body>
