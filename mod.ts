@@ -195,9 +195,13 @@ const html = `<html>
     async function initEditor() {
       await loadURL('${env("url")}');
       await reload();
-      if (!confirm('Load file from URL in clipboard?')) return;
-      const clipURL = await navigator.clipboard.readText();
-      await loadURL(clipURL);
+      try {
+	      const clipURL = await navigator.clipboard.readText();
+	      if (clipURL.substring(0,8).includes(':') && !confirm('Load data from URL ' + clipURL.substring(0,30) + '...?')) return;
+	      await loadURL(clipURL);
+      } catch (e) {
+        console.log('no clipboard data');
+      }
     }
 
     initEditor();
