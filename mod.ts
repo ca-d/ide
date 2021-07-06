@@ -170,7 +170,7 @@ const html = `<html>
       const text = await res.text();
       if (text) {
         console.log('loading', url);
-        editor.setAttribute('valu', text);
+        editor.setAttribute('value', text);
       }
     }
     
