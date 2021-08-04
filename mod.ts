@@ -121,21 +121,9 @@ async function handlePost(request: Request) {
 const html = `<html>
 <head>
   <title>ide.deno.dev</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-<script src="https://unpkg.com/@isomorphic-git/lightning-fs"></script>
-<script src="https://unpkg.com/isomorphic-git"></script>
-<script type="module">
-import http from 'https://unpkg.com/isomorphic-git@beta/http/web/index.js'
-const fs = new LightningFS('fs')
-
-const dir = '/test-clone'
-git.clone({ fs, http, dir, url: 'https://github.com/isomorphic-git/lightning-fs', corsProxy: 'https://cors.isomorphic-git.org' }).then(console.log)
-fs.promises.readdir('/test-clone').then(console.warn);
-</script>
-
   <script type="module"
     src="https://unpkg.com/ace-custom-element@latest/dist/index.min.js">
   </script>
@@ -153,10 +141,6 @@ fs.promises.readdir('/test-clone').then(console.warn);
     <i class="fa open fa-external-link-alt"></i>
     <i class="fa up fa-cloud-upload-alt"></i>
   </div>
-  
-  <!--
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" integrity="sha512-RXf+QSDCUQs5uwRKaDoXt55jygZZm2V++WUZduaU/Ui/9EGp3f/2KZVahFZBKGH0s774sd3HmrhUy+SgOFQLVQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  -->
   
   <script type="module">
     function downloadString(text, fileType, fileName) {
