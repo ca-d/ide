@@ -188,7 +188,6 @@ const html = `<html>
     
     async function initEditor() {
       await loadURL('${env("url")}');
-      await reload();
       try {
 	      const clipURL = await navigator.clipboard.readText();
 	      if (clipURL.substring(0,8).includes(':') && !confirm('Load data from URL ' + clipURL.substring(0,30) + '...?')) return;
